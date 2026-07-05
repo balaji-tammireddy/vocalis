@@ -1,0 +1,45 @@
+# ==========================================================
+# VOCALIS v3.0 - .gitignore
+# ==========================================================
+# Excludes: virtual environment, large datasets, downloaded
+# models, and generated audio -- none of these belong in
+# version control. Only code, configs, docs, and small result
+# artifacts (CSVs, figures) get committed.
+# ==========================================================
+
+# Python virtual environment (recreate via requirements.txt instead)
+venv/
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# VCTK dataset (11GB+ zip and extracted audio -- far too large for git,
+# and redistributing it may violate VCTK's license terms anyway.
+# Anyone cloning this repo should download it fresh via Section 2's code)
+data/raw/
+
+# Generated synthetic audio (regenerable via Section 3, large in aggregate)
+data/synthetic/
+data/synthetic_gtts/
+
+# Extracted embeddings (regenerable via Section 4, .npy files, large in aggregate)
+data/embeddings/
+
+# Downloaded pretrained models (SpeechBrain ECAPA-TDNN, ~80MB,
+# re-downloads automatically on first run of Section 4)
+models/pretrained/
+
+# Piper binary + voice models (downloaded separately per SETUP.md,
+# not something we authored -- also keeps repo size down since the
+# voice model alone is ~63MB)
+piper/
+
+# OS-specific junk
+Thumbs.db
+.DS_Store
+
+# VS Code workspace settings (optional -- remove this line if you
+# want to share editor settings with collaborators)
+.vscode/

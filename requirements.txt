@@ -1,0 +1,55 @@
+# VOCALIS v3.0 — requirements.txt
+# CPU-only install (no CUDA). Install with:
+#   pip install -r requirements.txt
+
+# --- Core ML (CPU builds) ---
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.3.1+cpu
+torchaudio==2.3.1+cpu
+
+# --- Speaker encoders ---
+# NOTE: resemblyzer depends on `webrtcvad`, which has no Windows wheels
+# on PyPI and requires a C++ compiler to build from source. We use
+# `webrtcvad-wheels` instead -- a maintained fork providing the identical
+# `webrtcvad` module as prebuilt Windows wheels. Install this BEFORE
+# resemblyzer (see SETUP.md Step 5c) -- do not add resemblyzer to this
+# file, it must be installed separately with --no-deps.
+webrtcvad-wheels==2.0.14
+speechbrain==1.0.0
+
+# NOTE: huggingface_hub v1.0+ removed the `use_auth_token` argument that
+# speechbrain 1.0.0 still calls internally (TypeError otherwise). Pinned
+# to a pre-1.0 version for compatibility.
+huggingface_hub==0.25.2
+
+# --- TTS (primary: Piper) ---
+# NOTE: piper-tts pip package requires piper-phonemize, which has no
+# Windows wheels on PyPI (confirmed platform limitation, not a version
+# issue). We use Piper's standalone Windows binary instead -- see
+# SETUP.md Step 5b for download instructions. Do not pip-install piper-tts.
+
+# --- TTS (generalization experiment, Section 9) ---
+gtts==2.5.1
+
+# --- Audio I/O ---
+soundfile==0.12.1
+librosa==0.10.2
+
+# --- Data handling ---
+pandas==2.2.2
+numpy==1.26.4
+
+# --- ML utilities ---
+scikit-learn==1.5.0
+
+# --- Plotting ---
+matplotlib==3.9.0
+
+# --- Progress bars ---
+tqdm==4.66.4
+
+# --- Notebook support ---
+# NOTE: ipykernel/jupyter intentionally omitted -- VS Code's Jupyter
+# extension already installed working versions of these into this venv
+# automatically. Pinning older versions here would downgrade them
+# unnecessarily and risk a conflict.

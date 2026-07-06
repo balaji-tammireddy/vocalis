@@ -5,6 +5,12 @@ Zero-shot speech synthesis is widely used, but speaker embeddings extracted from
 
 **VOCALIS** is a lightweight, purely embedding-space residual adapter network designed to bridge this synthetic-to-natural domain gap. It learns to map synthetic speaker embeddings toward their natural counterparts without modifying the pretrained encoder or any downstream systems.
 
+<p align="center">
+  <img src="images/embedding_pipeline.png" alt="Overview of the VOCALIS framework" width="800">
+  <br>
+  <strong>Fig. 1. Overview of the VOCALIS framework.</strong> Natural and synthetic speech are passed through the same frozen speaker encoder. The synthetic embedding is refined using the proposed residual adapter network before alignment with the corresponding natural speaker embedding during training.
+</p>
+
 ### Key Highlights
 - **Parameter-efficient:** The adapter is small (~462,000 parameters).
 - **Fast Training:** Trains typically in 2-3 minutes on ordinary CPU hardware.
@@ -12,10 +18,28 @@ Zero-shot speech synthesis is widely used, but speaker embeddings extracted from
 - **Robust Generalization:** Generalizes to unseen TTS systems (e.g., gTTS), improving cosine similarity from 0.0507 to 0.3165 despite never being trained on it.
 - **Evaluation:** Outperforms classical linear adaptation methods like Mean-shift and Deep CORAL.
 
+---
+
+## 🛠️ Methodology & Dataset
+
+### Dataset Construction
+To train the adapter, we construct a paired dataset of natural and synthetic speech. For each natural VCTK recording, a matching synthetic recording is generated offline using identical transcripts. 
+
+<p align="center">
+  <img src="images/dataset_pipeline.png" alt="Dataset Construction Pipeline" width="800">
+  <br>
+  <strong>Fig. 2. Construction of the paired natural–synthetic speech dataset.</strong>
+</p>
+
+---
+
 ## 📂 Repository Structure
 ```text
 vocalis_3.0/
+├── LICENSE             # MIT License file
+├── README.md           # This documentation file
 ├── data/               # Contains the dataset and extracted embeddings
+├── images/             # Research paper figures (PDFs and converted PNGs)
 ├── models/             # Saved model checkpoints and weights
 ├── notebooks/          
 │   ├── original/       # Exploratory and initial notebooks (VOCALIS.ipynb)
@@ -28,6 +52,8 @@ vocalis_3.0/
     ├── figures/        # Generated plots and evaluation charts
     └── metrics/        # Evaluation results and metrics
 ```
+
+---
 
 ## ⚙️ Requirements & Installation
 
@@ -50,6 +76,8 @@ vocalis_3.0/
 - **webrtcvad-wheels**: If using Resemblyzer, make sure `webrtcvad-wheels` is installed before it (this is configured in the requirements).
 - **Piper TTS**: The `piper` standalone Windows binary is included in the `piper/` directory. Do not pip-install `piper-tts` due to missing Windows wheels for `piper-phonemize`.
 
+---
+
 ## 🚀 Usage
 
 The entire pipeline—from dataset loading to embedding extraction, training, and evaluation—is contained within the Jupyter Notebooks.
@@ -62,7 +90,12 @@ The entire pipeline—from dataset loading to embedding extraction, training, an
    - Evaluate performance (Cosine Similarity, Euclidean Distance, MSE) on the held-out test split (6 speakers).
    - Test cross-synthesis generalization using gTTS.
 
-## 📊 Results Summary
+---
+
+## 📊 Results & Analysis
+
+### Performance Comparison
+VOCALIS successfully aligns the synthetic speaker embeddings with the natural embeddings much better than existing linear transformations. The improvement holds up across different random seeds and varying sizes of training data.
 
 | Method | Mean Cosine Similarity |
 |--------|------------------------|
@@ -71,7 +104,33 @@ The entire pipeline—from dataset loading to embedding extraction, training, an
 | Mean-Shift | 0.2051 |
 | **VOCALIS (Proposed)** | **0.3239** |
 
-VOCALIS successfully aligns the synthetic speaker embeddings with the natural embeddings much better than existing linear transformations. The improvement holds up across different random seeds and varying sizes of training data.
+### Training Dynamics
+During the optimization process, training and validation losses are minimized, and cosine similarity between the synthetic and natural embeddings rises steadily.
+
+<p align="center">
+  <img src="images/training_loss.png" alt="Training and Validation Loss" width="380" style="margin-right: 15px;">
+  <img src="images/training_cosine.png" alt="Evolution of Cosine Similarity" width="380">
+  <br>
+  <strong>Fig. 3. Training and validation loss (left) and Fig. 4. Cosine similarity evolution (right) during training.</strong> The dashed lines indicate the selected optimal checkpoint.
+</p>
+
+### Sensitivity & Ablation Analysis
+We also investigate how the blending parameter $\alpha$ influences the residual connection, and how the volume of training speaker data scales the adapter's capacity.
+
+<p align="center">
+  <img src="images/residual_ablation.png" alt="Effect of residual blending weight" width="380" style="margin-right: 15px;">
+  <img src="images/training_data_scaling.png" alt="Effect of training set size" width="380">
+  <br>
+  <strong>Fig. 5. Effect of the residual blending weight &alpha; on cosine similarity (left) and Fig. 6. Effect of training set size on adaptation performance (right).</strong>
+</p>
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 📝 Citation
 
@@ -85,3 +144,4 @@ Balaji Ganesh Tammireddy and Puruhutika Rao Tata.
 ## 🤝 Authors
 - **Balaji Ganesh Tammireddy** (VIT-AP University)
 - **Puruhutika Rao Tata** (VIT-AP University)
+
